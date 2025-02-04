@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>vanshjangir</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div id="container">
+      <div id="header-cont">
+        <div id="header">
+          <h2>Vansh Jangir</h2>
+        </div>
+      </div>
+      <div id="main-cont">
+        <div id="home">
+          <p>
+            Hi!
+          </p>
+        </div>
+        <div id="about-cont">
+          <h1>about</h1>
+          <div id="about-text">
+            <p>I am a B.Tech under-grad at IIIT Naya Raipur.
+            I discovered programming in my first year of college.<br>
+            And it is the only thing that I am able to and want to pursue as a career.<br>
+            I like to learn all kinds of things, but nowadays most of them are related to computers and programming.<br>
+            Here is my <a href="others/resume.pdf">resume</a><p>
+          </div>
+        </div>
+        <div id="experience-cont">
+          <h1>experience</h1>
+          <table>
+            <tr>
+              <td>
+                <h4>Karya - Software Engineer Intern</h4>
+                <p style="display: inline;">
+                  Feb 2024 - Present &nbsp; &nbsp;
+                  <a href="https://contractken.com">karya.in</a>
+                </p>
+              </td>
+              <td>
+                Working on <a href="https://github.com/karya-inc/natural-language-query">NLQ(Natural Language Query)</a>.
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <h4>ContractKen - Software Engineer Intern</h4>
+                <p style="display: inline;">
+                  Sep 2024 - Nov 2024 &nbsp; &nbsp;
+                  <a href="https://contractken.com">contractken.com</a>
+                </p>
+              </td>
+              <td>
+                Backend Intern at ContractKen. Fixing bugs. Mostly Working in Python(Flask) and Apache Server.
+              </td>
+            </tr>
+          </table>
+        </div>
+        <div id="projects-cont">
+          <h1>projects</h1>
+          <table>
+            <tr>
+              <td>
+                <h4>XDB-Database</h4>
+                <a href="https://github.com/vanshjangir/xdb">github</a>
+              </td>
+              <td>
+                An ACID compliant database written in Go. Uses B+tree to store data on disk. Transactions and secondary indexes.
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <h4>Load Balancer</h4>
+                <a href="https://github.com/vanshjangir/lb">github</a>
+              </td>
+              <td>
+                A Load balancer written from scratch in C++ using socket programming. DSR mode is currently work in progress.
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <h4>Hardcode</h4>
+                <a href="https://github.com/vanshjangir/hardcode">github</a>
+                <a href="http://ec2-100-27-205-217.compute-1.amazonaws.com/">website</a>
+              </td>
+              <td>
+                Coding platform to practice algorithmic problems.<br>
+              </td>
+            </tr>
+          </table>
+        </div>
+        <div id="contact-cont">
+          <h1>contact</h1>
+          <div id="contact-text">
+            I may not be active on some of the platforms sometimes,<br>but feel free to reach out.
+          </div>
+          <br>
+          <br>
+          <div id="contact-list">
+            <div class="contact-sm">
+              <a href="mailto:vanshjangir0001@gmail.com"><img height="40" src="others/mail.png" alt="mail"/></a>
+            </div>
+            <div class="contact-sm">
+              <a href="https://github.com/vanshjangir"><img height="40" src="others/github.png" alt="github"/></a>
+            </div>
+            <div class="contact-sm">
+              <a href="https://www.linkedin.com/in/vansh-jangir-195127256"><img height="40" src="others/linkedin.png" alt="linkedin"/></a>
+            </div>
+            <div class="contact-sm">
+              <a href="https://x.com/vanshjangir_"><img height="40" src="others/x.png" alt="x"/></a>
+            </div>
+            <div class="contact-sm">
+              <a href="https://www.instagram.com/vanshjangir_"><img height="40" src="others/instagram.png" alt="instagram"/></a>
+            </div>
+            <div class="contact-sm">
+              <a href="https://gitlab.com/vanshjangir"><img height="40" src="others/gitlab.png" alt="gitlab"/></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <canvas id="main-canvas"></canvas>
+    <div id="button-cont">
+      <button id="start-button"><img class="button-img" id="start-image" src="others/pause.png"/></button>
+      <button id="reset-button"><img class="button-img" src="others/reset.png"/></button>
+      <button id="plus-button"><img class="button-img" id="plus-image" src="others/plus.png"/></button>
+      <button id="minus-button"><img class="button-img" src="others/minus.png"/></button>
+      <text id="population"></text>
+      <text id="refresh-time"></text>
+      <text id="about" style="max-width: 380px;">
+        <br>
+        The Game of Life, also known as Conway's Game of Life or simply Life, is a cellular automaton devised by the British mathematician John Horton Conway in 1970. It is a zero-player game, meaning that its evolution is determined by its initial state, requiring no further input. One interacts with the Game of Life by creating an initial configuration and observing how it evolves. It is Turing complete and can simulate a universal constructor or any other Turing machine. 
+      </text>
+    <div>
+  </body>
+  <script src="index.js"></script>
+</html>
