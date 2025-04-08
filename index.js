@@ -142,7 +142,7 @@ function resetWorld(ctx){
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
-    CELL = 10;
+    CELL = 20;
     HEIGHT = canvas.height;
     WIDTH = canvas.width;
     GRID_ROWS = Math.floor(HEIGHT/CELL);
@@ -158,22 +158,17 @@ function resetWorld(ctx){
     const plusButton = document.getElementById("plus-button");
     const minusButton = document.getElementById("minus-button");
     const population = document.getElementById("population");
-    const about = document.getElementById("about");
     const refreshtime = document.getElementById("refresh-time");
     const container = document.getElementById("container");
 
     refreshtime.textContent = "Refresh time: " + REFRESH_TIME + "ms";
 
     buttonCont.addEventListener('mouseover', () => {
-        container.classList.add("dimmed");
-        about.style.display = 'block';
         population.style.display = 'block';
         refreshtime.style.display = 'block';
     }, true);
     
     buttonCont.addEventListener('mouseout', () => {
-        container.classList.remove("dimmed");
-        about.style.display = 'none';
         population.style.display = 'none';
         refreshtime.style.display = 'none';
     }, true);
