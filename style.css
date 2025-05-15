@@ -3,6 +3,7 @@ body{
     color: #afcace;
     font-weight: 500;
     font-family: 'Ruda', sans-serif;
+    font-size: 20px;
 }
 #container{
     display: flex;
@@ -39,6 +40,9 @@ body{
     flex-direction: column;
     justify-content: left;
 }
+#about-cont{
+    margin-bottom: 100px;
+}
 #contact-cont{
     display: flex;
     flex-direction: column;
@@ -60,8 +64,8 @@ a{
     text-decoration: none;
     color: #1793d1;
 }
-h4{
-    margin-bottom: -4px;
+h3{
+    margin: 0px 0px 0px 0px;
 }
 table{
     table-layout: fixed;
@@ -69,7 +73,13 @@ table{
 }
 td{
     align-content:start;
-    padding-bottom: 50px;
+    padding-bottom: 100px;
+}
+p{
+    margin: 0px 0px 0px 0px;
+}
+h1{
+    font-size: 40px;
 }
 
 
