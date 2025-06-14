@@ -86,7 +86,7 @@ function renderWorld(ctx){
     for(let i = 0; i < GRID_COLS; i++){
         for(let j = 0; j < GRID_ROWS; j++){
             if(WORLD[STATE][i][j] === 1){
-                ctx.fillStyle = "#afcace";
+                ctx.fillStyle = "#cfeaee";
                 ctx.fillRect(i * CELL, j * CELL, CELL, CELL);
             }
         }
@@ -99,7 +99,7 @@ function setInitialState(){
     WORLD_COPY = WORLD[0].map(row => row.slice());
     for(let i = 0; i < GRID_COLS; i++){
         for(let j = 0; j < GRID_ROWS; j++){
-            if(i > GRID_COLS/10 && i < 9*GRID_COLS/10 && j > GRID_ROWS/10 && j < 9*GRID_ROWS/10){
+            if(i > GRID_COLS/10 && i < 7*GRID_COLS/10 && j > GRID_ROWS/16){
                 continue;
             }
             WORLD[STATE][i][j] = (Math.random() > 1 - GEN_PROB ? 1 : 0);
