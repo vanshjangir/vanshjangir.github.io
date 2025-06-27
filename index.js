@@ -99,7 +99,7 @@ function setInitialState(){
     WORLD_COPY = WORLD[0].map(row => row.slice());
     for(let i = 0; i < GRID_COLS; i++){
         for(let j = 0; j < GRID_ROWS; j++){
-            if(i > GRID_COLS/10 && i < 7*GRID_COLS/10 && j > GRID_ROWS/16){
+            if(i > GRID_COLS/10 && i < 5*GRID_COLS/10 && j > GRID_ROWS/16){
                 continue;
             }
             WORLD[STATE][i][j] = (Math.random() > 1 - GEN_PROB ? 1 : 0);
@@ -142,7 +142,7 @@ function resetWorld(ctx){
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
-    CELL = 20;
+    CELL = 25;
     HEIGHT = canvas.height;
     WIDTH = canvas.width;
     GRID_ROWS = Math.floor(HEIGHT/CELL);
@@ -159,7 +159,6 @@ function resetWorld(ctx){
     const minusButton = document.getElementById("minus-button");
     const population = document.getElementById("population");
     const refreshtime = document.getElementById("refresh-time");
-    const container = document.getElementById("container");
 
     refreshtime.textContent = "Refresh time: " + REFRESH_TIME + "ms";
 

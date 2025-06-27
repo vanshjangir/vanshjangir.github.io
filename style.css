@@ -30,9 +30,6 @@ body{
     width: 60%;
     margin-bottom: 20px;
 }
-#projects-cont{
-    margin-bottom: 100px;
-}
 .contact-sm{
     display: flex;
     flex-direction: column;
