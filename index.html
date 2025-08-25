@@ -7,77 +7,88 @@
   </head>
   <body>
     <div id="container">
-      <div id="main-cont">
-        <div id="about-cont">
-          <div style="display: flex; flex-direction: row; justify-content: space-between;">
-            <div style="font-size: 40px;">Vansh Jangir</div>
-          </div>
-          <div id="about-text">
-            <p>
-              I am a B.Tech under-grad learning to code.<br>
-              <a href="devlog/index.html">devlog</a> and <a href="others/resume.pdf">resume</a> 
-            <p>
-          </div>
-            <div style="display: flex; padding-top: 10px;">
-              <div class="contact-sm">
-                <a href="mailto:vanshjangir0001@gmail.com"><img height="40" src="others/mail.png" alt="mail"/></a>
-              </div>
-              <div class="contact-sm">
-                <a href="https://github.com/vanshjangir"><img height="40" src="others/github.png" alt="github"/></a>
-              </div>
-              <div class="contact-sm">
-                <a href="https://www.linkedin.com/in/vanshjangir"><img height="40" src="others/linkedin.png" alt="linkedin"/></a>
-              </div>
-              <div class="contact-sm">
-                <a href="https://x.com/vanshjangir_"><img height="40" src="others/x.png" alt="x"/></a>
-              </div>
-              <div class="contact-sm">
-                <a href="https://www.instagram.com/vanshjangir_"><img height="40" src="others/instagram.png" alt="instagram"/></a>
-              </div>
-              <div class="contact-sm">
-                <a href="https://gitlab.com/vanshjangir"><img height="40" src="others/gitlab.png" alt="gitlab"/></a>
-              </div>
-          </div>
-        </div>
-        <div id="experience-cont">
-          <h1>experience</h1>
-          <div>
-            <div>
-              <h4>Karya - Software Engineer Intern</h4>
-              <p>Feb 2025 - Present</p>
+      <div class="main-cont">
+        <div>
+          <div id="about-cont">
+            <div style="
+              display: flex;
+              flex-direction: row;
+              justify-content: space-between;
+              ">
+              <h1>Vansh Jangir</h1>
+            </div>
+            <div id="about-text">
+              <p>
+                I am a B.Tech under-grad learning to code.<br>
+              <p>
+            </div>
+            <div style="margin-top: 20px;">
+              <a href="others/resume.pdf">resume</a> 
+              <br>
+              <br>
+              <a href="mailto:vanshjangir0001@gmail.com">Mail</a>&nbsp;&nbsp;
+              <a href="https://x.com/vanshjangir_">Twitter</a>&nbsp;&nbsp;
+              <a href="https://www.instagram.com/vanshjangir_">Instagram</a>
+              <br>
+              <a href="https://github.com/vanshjangir">Github</a>&nbsp;&nbsp;
+              <a href="https://www.linkedin.com/in/vanshjangir">LinkedIn</a>
             </div>
           </div>
-          <br>
-          <div>
+          <div id="projects-cont">
+            <h1>Projects</h1>
             <div>
-              <h4>ContractKen - Software Engineer Intern</h4>
-              <p>Sep 2024 - Nov 2024</p>
+              <a href="https://github.com/vanshjangir/xdb">Xdb</a>
+              <p>An ACID compliant database written in Go.</p>
             </div>
+            <br>
+            <div>
+              <a href="https://github.com/vanshjangir/afx">Afx</a>
+              <p>Go style function scheduling in C.<br></p>
+            </div>
+            <br>
+            <div>
+              <a href="https://github.com/vanshjangir/rapid-go">Rapid Go</a>
+              <a href="https://rapidgo.vanshjangir.in">&nbsp;web</a>
+              <p>An online Go game playing server.<br></p>
+            </div>
+            <br>
+            <div>
+              <a href="https://github.com/vanshjangir/lb">Load Balancer</a>
+              <p>A Layer 7 Load balancer written in Rust.</p>
+            </div>
+            <br>
+            <div>
+              <a href="https://github.com/vanshjangir/dotfiles">Linux dotfiles</a>
+              <p>My linux config.</p>
+            </div>
+            <br>
           </div>
         </div>
-        <div id="projects-cont">
-          <h1>projects</h1>
-          <div>
-            <a href="https://github.com/vanshjangir/xdb">Xdb</a>
-            <p>An ACID compliant database written in Go.</p>
+        <div>
+          <div id="experience-cont">
+            <h1>Work Exp</h1>
+            <div>
+              <div>
+                <h4><a href="https://karya.in">Karya</a> - Software Engineer Intern</h4>
+                <p>Feb 2025 - Present</p>
+              </div>
+            </div>
+            <br>
+            <div>
+              <div>
+                <h4><a href="https://contractken.com">ContractKen</a> - Software Engineer Intern</h4>
+                <p>Sep 2024 - Nov 2024</p>
+              </div>
+            </div>
           </div>
-          <br>
-          <div>
-            <a href="https://github.com/vanshjangir/afx">Afx</a>
-            <p>Go style function scheduling in C.<br></p>
+          <div id="blog-cont">
+            <h1>Blogs</h1>
+            <div>
+              <a href="./blogs/1_afx.html">1.</a>
+              <p>Go inspired preemptive function scheduling, implemented in C.</p>
+            </div>
+            <br>
           </div>
-          <br>
-          <div>
-            <a href="https://github.com/vanshjangir/rapid-go">Rapid Go</a>
-            <a href="https://rapidgo-puog.onrender.com">&nbsp;web</a>
-            <p>An online Go game playing server.<br></p>
-          </div>
-          <br>
-          <div>
-            <a href="https://github.com/vanshjangir/lb">Load Balancer</a>
-            <p>A Layer 7 Load balancer written in Rust.</p>
-          </div>
-          <br>
         </div>
       </div>
     </div>
@@ -85,11 +96,9 @@
     <div id="button-cont">
       <button id="start-button"><img class="button-img" id="start-image" src="others/pause.png"/></button>
       <button id="reset-button"><img class="button-img" src="others/reset.png"/></button>
-      <button id="plus-button"><img class="button-img" id="plus-image" src="others/plus.png"/></button>
-      <button id="minus-button"><img class="button-img" src="others/minus.png"/></button>
       <text id="population"></text>
       <text id="refresh-time"></text>
-      <div>
+    </div>
   </body>
   <script src="index.js"></script>
 </html>
