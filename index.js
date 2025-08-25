@@ -1,5 +1,5 @@
-let REFRESH_TIME = 2000
-let GEN_PROB = 0.2
+let REFRESH_TIME = 10000
+let GEN_PROB = 0.25
 
 let HEIGHT;
 let WIDTH;
@@ -99,9 +99,6 @@ function setInitialState(){
     WORLD_COPY = WORLD[0].map(row => row.slice());
     for(let i = 0; i < GRID_COLS; i++){
         for(let j = 0; j < GRID_ROWS; j++){
-            if(i > GRID_COLS/10 && i < 5*GRID_COLS/10 && j > GRID_ROWS/16){
-                continue;
-            }
             WORLD[STATE][i][j] = (Math.random() > 1 - GEN_PROB ? 1 : 0);
         }
     }
@@ -142,7 +139,7 @@ function resetWorld(ctx){
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
-    CELL = 25;
+    CELL = 75;
     HEIGHT = canvas.height;
     WIDTH = canvas.width;
     GRID_ROWS = Math.floor(HEIGHT/CELL);
@@ -151,12 +148,11 @@ function resetWorld(ctx){
     WORLD_COPY = WORLD[0].map(row => row.slice());
 
 
+    let cur_refresh_time = 500;
     const buttonCont = document.getElementById("button-cont");
     const startButton = document.getElementById("start-button");
     const startImage = document.getElementById("start-image");
     const resetButton = document.getElementById("reset-button");
-    const plusButton = document.getElementById("plus-button");
-    const minusButton = document.getElementById("minus-button");
     const population = document.getElementById("population");
     const refreshtime = document.getElementById("refresh-time");
 
@@ -189,16 +185,6 @@ function resetWorld(ctx){
         setInitialState();
         resetWorld(ctx);
     }, true);
-    
-    plusButton.addEventListener('click', () => {
-        REFRESH_TIME += 100
-        refreshtime.textContent = "Refresh time: " + REFRESH_TIME + "ms";
-    }, true);
-    
-    minusButton.addEventListener('click', () => {
-        REFRESH_TIME -= Math.min(REFRESH_TIME - 100, 100)
-        refreshtime.textContent = "Refresh time: " + REFRESH_TIME + "ms";
-    }, true);
 
     setInitialState();
     function gameloop() {
@@ -209,7 +195,8 @@ function resetWorld(ctx){
         resetWorld(ctx);
         updateState(ctx);
         renderWorld(ctx);
-        setTimeout(() => { requestAnimationFrame(gameloop); }, REFRESH_TIME);
+        setTimeout(() => { requestAnimationFrame(gameloop); }, cur_refresh_time);
+        cur_refresh_time = REFRESH_TIME;
     }
     gameloop();
 })();
