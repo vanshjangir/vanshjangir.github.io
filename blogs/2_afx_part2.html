@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Vansh Jangir</title>
+    <link rel="stylesheet" href="../style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Ruda:wght@400..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="dracula.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </head>
+  <body>
+    <div id="container" style="display: flex; align-items: center;">
+      <div
+        id="main-cont"
+        style="display: flex; flex-direction: column; font-size: 20px; width: 50%; align-items: left; padding-top: 80px;"
+      >
+        <h1>AFX - Asynchronous Function Execution (Part 2)</h1><br>
+        <p>
+          This blog is a continuation of my previous <a href="./1_afx.html">blog</a>.
+        </p><br>
+        
+        <br><h2>Implementation so far</h2><br>
+        <p>
+          Afx is able to schedule cpu-bound functions. There are some major bugs, but who cares. It does not support any I/O call, which is sad. This blog is about the Implementation of I/O in afx.
+        </p><br>
+        
+        <br><h2>Why I/O does not work currently</h2><br>
+        <p>
+          I/O calls are generally blocking and make the thread sleep. When a the executor thread is sleeping and it receives a signal, it wakes up without caring whether the I/O call is finished or not. Same with sleep() as well.
+        </p><br>
+        
+        <br><h2>Implementation</h2><br>
+        <p>
+          We can create a new thread, lets call it poller. It will use the epoll syscall and will wait for events to occur. We need to make custom wrappers around already existing I/O calls. In those wrappers we will first make the file-descriptor non-blocking(consider this in terms of sockets), so that they can be attached to epoll. Then we can have a state for every async function. It can be either RUNNABLE, BLOCKED_ON_IO or BLOCKED_ON_TIMER. We will use the timerfd_create syscall to use timers with epoll.
+        </p><br>
+        <p>
+          In our custom wrappers, we can mark the current async function as either BLOCKED_ON_IO or BLOCKED_ON_TIMER and yield to monitor to schedule the next RUNNABLE function. When epoll receive any event, it will mark the respective async function as RUNNABLE.
+        </p><br>
+        <p>
+            When a blocked function becomes RUNNABLE again, we will first block SIGURG signal on that thread, then call the underlying syscall, so that it can execute without any disturbance.
+        </p><br>
+        <p>
+          Problem: When all the functions are blocked, where should the executor go. It can go to its pause state. This was causing some error. So to work around, a background async function will be running always which has just one function, to be RUNNABLE all the time and to just pause for its entire time of execution, until some other function become RUNNABLE again.
+        </p><br>
+        <p>
+          Source code and references: <a href="https://github.com/vanshjangir/afx">https://github.com/vanshjangir/afx</a>
+        </p>
+        <br><br><br><br><br><br><br><br>
+      </div>
+    <div>
+  </body>
+</html>

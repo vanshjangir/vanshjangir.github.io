@@ -27,45 +27,53 @@
           This works great for tasks in which a lot of I/O calls are made, but fails to work when there is a tight loop. Hence in Go 1.14, <b>Preemptive scheduling</b> was added. In Preemptive scheduling, the sysmon checks whether there is a Go routine that is running for more than a specific time interval (10ms), and then forcefully pauses it by sending a signal.
         </p><br>
         <p>More on Go scheduling: <a href="https://www.youtube.com/watch?v=-K11rY57K7k">How go routines works</a></p><br>
+        
+        <br><h2>Goals</h2>
+        <ol>
+          <li>Minimal: I don't want the user to care about how the scheduling is happening i.e. I don't want to expose too many functions.</li>
+          <li>Function Signature agnostic: The scheduler should be able to schedule any type of function, without caring about the number/type of arguments.</li>
+        </ol><br>
+        
+        <br><h2>Initial design</h2>
+        <ol>
+          <li>Monitor: A thread that will periodically halts the execution of current async function and schedules the next.</li>
+          <li>Executor: A thread on which the actually execution of async functions will happen.</li>
+          <li>Custom stacks: I am thinking of allocating a dedicated chunk of memory on heap for each async function, which will serves as its stack.</li>
+          <li>Scheduling: The monitor will preempt the executor, on which we need to store the entire state of cpu somewhere and load the state of next function on cpu.</li>
+        </ol><br>
 
         <br><h2>How to preempt a thread</h2><br>
         <p>
-          We can send a <a href="https://en.wikipedia.org/wiki/Signal_(IPC)">signal</a> to a thread and we can define a function that will be called when a thread receives a signal. This pauses the execution of that thread, and the kernel also provides us the cpu state at which the signal was received. We can change the cpu state and the program counter to start executing another part of code.
-        </p><br>
-        <p>
-          This is what I have done. I have created two threads, one is monitor that sends a SIGURG signal after every 10ms and another is executor thread that executes the function in hand. When the executor thread receives the signal, I store the cpu state for that routine and replaces the state of that thread with another routine. So after the thread resumes, it starts executing the next function.
+          We can send a <a href="https://en.wikipedia.org/wiki/Signal_(IPC)">signal</a> to a thread and we can define a function that will be called when a thread receives a signal. This pauses the execution of that thread, and the kernel also provides us the cpu state at which the signal was received. We can change the cpu state and the program counter to start executing another part of code. I have used the SIGURG signal, because Go also uses it.
         </p><br>
         <br><h2>Storing function data without corruption</h2><br>
         <p style="background-color: black;">
           NOTE: To understand what is really going on, you need to have some knowledge of how a function call works under the hood.
         </p><br>
         <p>
-          Context is the data in CPU registers and the data in stack at a moment. Every thread has its own stack, which expands and shrinks dynamically. To switch between functions, we need to store the context of the ongoing function somewhere, and restore the context of next function in the CPU. We cannot use the same stack for every async function, because different functions uses different parts of the stack and changes made by some function will corrupt the stack for other functions. We can maintain different stacks for all async functions. This way, we can guarantee that no stack corruption will occur. However, stack overflow can happen, and since we cannot know at compile time how much stack a function will need, we cannot precisely predict the maximum stack size that should be allocated for that function (Zig is working in this direction). We need to figure a way to extend the stack, but that's for later.
-        </p><br>
-        <p>
-          For now, we can allocate a constant memory space for every async function and make the function use that part of the memory as its stack. Whenever an async function call occurs, we can allocate the memory space, then change the stack pointer (rsp) for that function to map to that memory space. So for this function, it will look as if this memory space is the main stack.
+          Context is the data in CPU registers and the data in stack at a moment. Every thread has its own stack, which expands and shrinks dynamically. Because we are using the same stack size for each async function, there is a risk of stack overflow. And since we cannot know at compile time how much stack a function will need, we cannot precisely predict the maximum stack size that should be allocated for that function (Zig is working in this direction, <a href="https://github.com/ziglang/zig/issues/23367">link</a>). We need to figure a way to extend the stack, but that's for later.
         </p><br>
         <br><h2>How a function calls happens under the hood</h2><br>
         When a function is called, these many things happens<br>
         <ol>
           <li>The caller function (the function that is calling another function) stores first 6 args in rdi, rsi, rdx, rcx, r8 and r9 registers. All the next arguments are stored on stack. Then the caller stores its own return address and the value of rbp (base pointer) register on the stack.</li>
-          <li>The caller calls the callee (the function that is being called). Callee function stores the value of rdi, rsi, rdx, rcx, r8 and r9 registers on the stack. Sometimes this does not happens, as if there is no need to use these registers for any other purposes (example if the function is very small and do only some operations). Compiler decides which args should be stored on stack, and which should not. This is known as a function prologue. And after that the code that the programmer has written starts executing.</li>
+          <li>The caller calls the callee (the function that is being called). Callee function stores the value of rdi, rsi, rdx, rcx, r8 and r9 registers on the stack. Sometimes this does not happens, as if there is no need to use these registers for any other purposes (example if the function is very small and is performing only some operations). Compiler decides which args should be stored on stack, and which should not. This is known as a function prologue. And after that the code that the programmer has written starts executing.</li>
           <li>After the execution, the callee resets the stack pointer (rsp) (if it has used it to store any of its own variables). And using the return address, the execution goes back to the caller.</li>
         </ol><br>
         <img src="../others/afx_stack.jpg"><br>
         <br><h2>Storing and switching context</h2><br>
         <p>
-          Switching between functions is not so complicated. When the signal is handled, the kernel provides us a pointer to all the registers and we can copy them, and we can also change them. What is complicated is to start a function as a routine (or async function). We need to store the value of registers right after the function prologue, and we need to store the value of the args that are stored on stack (All the args after the 6th arg are stored on stack by the caller before calling a function). I have used inline assembly to store the register values, and I store the rbp register value (rbp_caller) right before the caller calls the callee and right after the callee function's prologue (rbp_callee). The space between these two addresses is where the return address, base pointer and arguments (if number of args are >6) are stored.
+          Switching between functions is not so complicated. When the signal is handled, the kernel provides us a pointer to all the registers and we can copy them, and we can also change them. What is complicated is to start a function as an async function. We need to store the value of registers right after the function prologue, and we need to store the value of the args(>7) that are stored on stack. I have used inline assembly to store the register values, and I store the rbp register value (rbp_caller) right before the caller calls the callee and right after the callee function's prologue (rbp_callee). The space between these two addresses is where the return address, base pointer and arguments (>7) are stored.
         </p><br>
         <p>
-          For every async function, an 8KB memory space is allocated as its own custom stack, and the data between rbp_caller and rbp_callee is copied. The initial idea was that we can embed some assembly code at the starting of the function to save the state of the registers and the stack and then we'll stop the execution of the function after storing its state by calling the <i>leave</i> and <i>ret</i> instruction. And then put a label (1:) just after these instruction. And We can store the rip register (address of the next instruction) at the address of the label 1. When any function calls the an async function, we store the context and then return without executing any of the code. And when the executor will put this function in its own context, it will skip the register and stack copying logic and jump to the label 1, and start executing the body of the function. That did not worked.
+          For every async function, an 8KB(can be changed during compilation) memory space is allocated as its own custom stack, and the data between rbp_caller and rbp_callee is copied. The initial idea was that we can embed some assembly code at the starting of the function to save the state of the registers and the stack and then we'll stop the execution of the function after storing its state by calling the <i>leave</i> and <i>ret</i> instruction. And then put a label (1:) just after these instruction. And We can store the rip register (address of the next instruction) at the address of the label 1. When any function calls the an async function, we store the context and then return without executing any of the code. And when the executor will put this function in its own context, it will skip the register and stack copying logic and jump to the label 1, and start executing the body of the function. That did not worked.
         </p><br>
         <br><h2>Accurate measure of stack</h2><br>
         <p>
           When a function is called, the compiler sometimes writes some instructions in the function prologue that saves the value of the first 6 args on the stack(This is done by callee and is different from saving the args > 6 to the stack, which is done by caller). The problem is we cannot know at compile time how many arguments are being passed to a function, so we don't know how much stack after the rbp_callee should be saved (keep in mind that the stack is growing downwards, so its more like how much space before rbp_callee should we save). So we cannot just resume the execution of that function from there because we have not yet saved the data for first 6 args on the stack which is necessary.
         </p><br>
         <p>
-          To get around it, what I've done is I have made a wrapper around the original function that saves the registers and stack data and then returns. So for the initial caller it looks like the async function is complete and it goes on to do the next thing. But because we have saved the state, we now know that what data will be needed in the cpu at the time of calling, to call the original function i.e. the register values and the data stored on stack for args after the 6th arg. When a function is defined it has to be wrapped inside this async macro(details at the end).
+          To get around it, what I've done is I have made a wrapper around the original function that saves the registers and stack data and then returns using the ret instruction. But I have placed a label (1:) just after the ret instruction and stored its address int the rip. So for the initial caller it looks like the async function is complete and it goes on to do the next thing. But because we have saved the state, we now know that what data will be needed in the cpu at the time of calling, to call the original function i.e. the register values and the data stored on stack for args after the 6th arg. When a function is defined it has to be wrapped inside this async macro(details at the end).
         </p><br>
         <pre>
           <code class="language-c">
@@ -86,16 +94,13 @@
 
         // after the original function completes, deleting its stack
         // and jumping to executor thread
-        _afx_delete_context();\
-        asm volatile(\
-            "jmp *%0\n\t"\
-            ::"r"(_afx_executor_addr)\
-        );\
+        afx_delete_context();\
+        afx_yield();\
     }
           </code>
         </pre>
         <p>
-          When the scheduler schedules the async function to execute, the rip at this point is pointing to the 1: label and at this place instead of executing the code in the body of the function, we calls the original function. At this point, the state of the cpu is the same as when the the original caller called the async function. Now when we call the original function again, its like we are doing the compiler's job of saving the args in registers and stack and then executing the <i>callq</i>  instruction. Also initially all the space between rbp_caller and rbp_callee was being saved, but we don't need the return address and base pointer as we have returned to the caller function already. So now we only need to save the part of stack where caller have saved the args(if any). The image below describe what is being saved on the custom stack when the async function starts. The return address and base pointer are that of the wrapper function and not of the original caller function. And Callee is the original function which has been called again.
+          When the scheduler schedules the async function to execute, the rip at this point is pointing to the 1: label and at this place instead of executing the code in the body of the function, we calls the original function. At this point, the state of the cpu is the same as when the the original caller called the async function. Now when we call the original function again, its like we are doing the compiler's job of saving the args in registers and stack and then executing the <i>callq</i>  instruction. The image below describe what is being saved on the custom stack when the async function starts. The return address and base pointer are that of the wrapper function and not of the original caller function. And Callee is the original function which has been called again.
         </p><br>
         <img src="../others/afx_wrapper_stack.jpg"><br>
         <p>
