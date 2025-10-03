@@ -2,7 +2,7 @@ body{
     background-color: #001127;
     color: #cfeaee;
     font-weight: 500;
-    font-family: 'Ruda', sans-serif;
+    font-family: 'Iosevka Web';
     font-size: 20px;
 }
 #container{
@@ -38,6 +38,7 @@ a{
 }
 h1, h3, h2, h4{
     margin: 0px 0px 0px 0px;
+    font-family: 'Ruda', serif;
 }
 p{
     margin: 0px 0px 0px 0px;
