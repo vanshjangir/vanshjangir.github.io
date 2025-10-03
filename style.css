@@ -2,7 +2,7 @@ body{
     background-color: #001127;
     color: #cfeaee;
     font-weight: 500;
-    font-family: 'Ruda', sans-serif;
+    font-family: 'Iosevka Web';
     font-size: 20px;
 }
 #container{
@@ -14,30 +14,29 @@ body{
 }
 .main-cont{
     display: flex;
-    width: 40%;
     justify-content: space-around;
     padding-top: 120px;
+    gap: 40px;
 }
-#about-cont,
-#experience-cont{
-    display: flex;
-    flex-direction: column;
-    justify-content: left;
-    margin-bottom: 30px;
-}
+
 #about-cont,
 #experience-cont,
-#like-cont,
 #blog-cont,
 #projects-cont{
     width: 360px;
+    margin-bottom: 40px;
 }
+
 a{
     text-decoration: underline;
     color: white;
 }
+b{
+    color: white;
+}
 h1, h3, h2, h4{
     margin: 0px 0px 0px 0px;
+    font-family: 'Ruda', serif;
 }
 p{
     margin: 0px 0px 0px 0px;
