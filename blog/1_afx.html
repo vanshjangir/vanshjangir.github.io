@@ -4,10 +4,7 @@
     <title>Vansh Jangir</title>
     <link rel="stylesheet" href="../style.css">
     <link href="https://fonts.googleapis.com/css2?family=Ruda:wght@400..900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="dracula.css">
     <link href="https://iosevka-webfonts.github.io/iosevka/Iosevka.css" rel="stylesheet" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/highlight.min.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
   </head>
   <body>
     <div id="container" style="display: flex; align-items: center;">
@@ -16,6 +13,11 @@
         style="display: flex; flex-direction: column; font-size: 20px; width: 50%; align-items: left; padding-top: 80px;"
       >
         <h1>AFX - Asynchronous Function Execution</h1><br>
+        <p>Date: 6th July, 2025</p>
+        <br>
+        <br>
+        <br>
+        <br>
         <p>
           Preemptive function scheduling at user level is a very interesting concept. I get to know about it when I started learning Go. And I tried to implement it in C.
         </p><br>
@@ -23,9 +25,9 @@
         <br><h2>How Go routines works</h2><br>
         
         <p>
-          The Go runtime creates a separate thread called sysmon. This thread monitors and schedules other go routines. These go routines runs on a pool of threads. Before Go 1.14, the Go compiler used to put <b>checks</b> inside a go routine at specific places like before a function call. When the control reaches these checks, it stops the thread and gives control back to the sysmon. The sysmon then schedules another go routines to run on that thread. This approach is known as <b>Co-operative scheduling</b>.
+          The Go runtime creates a separate thread called sysmon. This thread monitors and schedules other go routines. These go routines runs on a pool of threads. Before Go 1.14, the Go compiler used to put <i>checks</i> inside a go routine at specific places like before a function call. When the control reaches these checks, it stops the thread and gives control back to the sysmon. The sysmon then schedules another go routines to run on that thread. This approach is known as <i>Co-operative scheduling</i>.
         <p><br>
-          This works great for tasks in which a lot of I/O calls are made, but fails to work when there is a tight loop. Hence in Go 1.14, <b>Preemptive scheduling</b> was added. In Preemptive scheduling, the sysmon checks whether there is a Go routine that is running for more than a specific time interval (10ms), and then forcefully pauses it by sending a signal.
+          This works great for tasks in which a lot of I/O calls are made, but fails to work when there is a tight loop. Hence in Go 1.14, <i>Preemptive scheduling</i> was added. In Preemptive scheduling, the sysmon checks whether there is a Go routine that is running for more than a specific time interval (10ms), and then forcefully pauses it by sending a signal.
         </p><br>
         <p>More on Go scheduling: <a href="https://www.youtube.com/watch?v=-K11rY57K7k">How go routines works</a></p><br>
         
@@ -48,7 +50,7 @@
           We can send a <a href="https://en.wikipedia.org/wiki/Signal_(IPC)">signal</a> to a thread and we can define a function that will be called when a thread receives a signal. This pauses the execution of that thread, and the kernel also provides us the cpu state at which the signal was received. We can change the cpu state and the program counter to start executing another part of code. I have used the SIGURG signal, because Go also uses it.
         </p><br>
         <br><h2>Storing function data without corruption</h2><br>
-        <p style="background-color: black;">
+        <p style="background-color: #2D6A9F;">
           NOTE: To understand what is really going on, you need to have some knowledge of how a function call works under the hood.
         </p><br>
         <p>
@@ -61,7 +63,7 @@
           <li>The caller calls the callee (the function that is being called). Callee function stores the value of rdi, rsi, rdx, rcx, r8 and r9 registers on the stack. Sometimes this does not happens, as if there is no need to use these registers for any other purposes (example if the function is very small and is performing only some operations). Compiler decides which args should be stored on stack, and which should not. This is known as a function prologue. And after that the code that the programmer has written starts executing.</li>
           <li>After the execution, the callee resets the stack pointer (rsp) (if it has used it to store any of its own variables). And using the return address, the execution goes back to the caller.</li>
         </ol><br>
-        <img src="../others/afx_stack.jpg"><br>
+        <img src="../others/afx_stack (1).png"><br>
         <br><h2>Storing and switching context</h2><br>
         <p>
           Switching between functions is not so complicated. When the signal is handled, the kernel provides us a pointer to all the registers and we can copy them, and we can also change them. What is complicated is to start a function as an async function. We need to store the value of registers right after the function prologue, and we need to store the value of the args(>7) that are stored on stack. I have used inline assembly to store the register values, and I store the rbp register value (rbp_caller) right before the caller calls the callee and right after the callee function's prologue (rbp_callee). The space between these two addresses is where the return address, base pointer and arguments (>7) are stored.
@@ -76,6 +78,10 @@
         <p>
           To get around it, what I've done is I have made a wrapper around the original function that saves the registers and stack data and then returns using the ret instruction. But I have placed a label (1:) just after the ret instruction and stored its address int the rip. So for the initial caller it looks like the async function is complete and it goes on to do the next thing. But because we have saved the state, we now know that what data will be needed in the cpu at the time of calling, to call the original function i.e. the register values and the data stored on stack for args after the 6th arg. When a function is defined it has to be wrapped inside this async macro(details at the end).
         </p><br>
+        <br>
+        <br>
+        <br>
+        <br>
         <pre>
           <code class="language-c">
 #define async(ret_type, fn, args, body)\
@@ -100,13 +106,18 @@
     }
           </code>
         </pre>
+        <br>
+        <br>
+        <br>
+        <br>
         <p>
           When the scheduler schedules the async function to execute, the rip at this point is pointing to the 1: label and at this place instead of executing the code in the body of the function, we calls the original function. At this point, the state of the cpu is the same as when the the original caller called the async function. Now when we call the original function again, its like we are doing the compiler's job of saving the args in registers and stack and then executing the <i>callq</i>  instruction. The image below describe what is being saved on the custom stack when the async function starts. The return address and base pointer are that of the wrapper function and not of the original caller function. And Callee is the original function which has been called again.
         </p><br>
-        <img src="../others/afx_wrapper_stack.jpg"><br>
-        <p>
-          Syntax is ugly, but this is the best I could do.
-        </p>
+        <img src="../others/afx_wrapper_stack (1).png"><br>
+        <br>
+        <br>
+        <br>
+        <br>
         <pre>
           <code class="language-c">
 //declaration
@@ -137,6 +148,10 @@ print_sum(10, 20);
 afx(print_sum(10, 20)):
           </code>
         </pre>
+        <br>
+        <br>
+        <br>
+        <br>
         <p>
           This implementation will not work at all in anything that will make the thread go to sleep which is most things i.e. an I/O call, sleep timer etc (and that's why this is actually useless). Because when a signal is received by a thread, it does care how much time is left in the timer or how much data is left to receive/send before it should wake up, instead it wakes up immediately and start executing the next line of code. So if a thread is blocked on an I/O call, and the monitor sends SIGURG to it, that I/O call is sort of cancelled. Maybe I'll add support for that in future.
         </p><br>
@@ -146,5 +161,13 @@ afx(print_sum(10, 20)):
         <br><br><br><br><br><br><br><br>
       </div>
     <div>
+    <canvas id="main-canvas"></canvas>
+    <div id="button-cont">
+      <button id="start-button"><img class="button-img" id="start-image" src="../others/pause.png"/></button>
+      <button id="reset-button"><img class="button-img" src="../others/reset.png"/></button>
+      <text id="population"></text>
+      <text id="refresh-time"></text>
+    </div>
   </body>
+  <script src="../index.js"></script>
 </html>

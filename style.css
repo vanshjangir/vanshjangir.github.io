@@ -16,7 +16,7 @@ body{
     display: flex;
     justify-content: space-around;
     padding-top: 120px;
-    gap: 40px;
+    gap: 10px;
 }
 
 #about-cont,
@@ -29,9 +29,9 @@ body{
 
 a{
     text-decoration: underline;
-    color: white;
+    color: #cfeaee;
 }
-b{
+i{
     color: white;
 }
 h1, h3, h2, h4{
@@ -51,7 +51,7 @@ h1{
     text-shadow: 0 0 60px #2D6A9F
 }
 code{
-    background-color: #000e1a;
+    background-color: #001127;
 }
 
 
@@ -69,6 +69,7 @@ code{
 #button-cont{
     position: fixed;
     top: 0;
+    left: 0;
     padding-top: 10px;
 }
 
