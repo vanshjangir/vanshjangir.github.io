@@ -14,6 +14,7 @@ body{
 }
 .main-cont{
     display: flex;
+    flex-direction: column;
     justify-content: space-around;
     padding-top: 120px;
     gap: 10px;
@@ -23,13 +24,18 @@ body{
 #experience-cont,
 #blog-cont,
 #projects-cont{
-    width: 360px;
     margin-bottom: 40px;
+    width: 640px;
 }
 
 a{
     text-decoration: underline;
     color: #cfeaee;
+}
+a:hover{
+    color: #001127;
+    text-decoration: none;
+    background-color: #cfeaee;
 }
 i{
     color: white;
