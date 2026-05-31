@@ -14,29 +14,64 @@ body{
 }
 .main-cont{
     display: flex;
+    flex-direction: column;
     justify-content: space-around;
-    padding-top: 120px;
-    gap: 10px;
+    margin-top: 120px;
+    gap: 16px;
 }
 
 #about-cont,
 #experience-cont,
 #blog-cont,
 #projects-cont{
-    width: 360px;
-    margin-bottom: 40px;
+    width: 560px;
+}
+
+
+#blog-cont,
+#projects-cont {
+    height: 200px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #cfeaee transparent;
+}
+
+#blog-cont::-webkit-scrollbar,
+#projects-cont::-webkit-scrollbar {
+    width: 6px;
+}
+
+#blog-cont::-webkit-scrollbar-track,
+#projects-cont::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#blog-cont::-webkit-scrollbar-thumb,
+#projects-cont::-webkit-scrollbar-thumb {
+    background: #cfeaee;
+    border-radius: 0;
+}
+
+#blog-cont::-webkit-scrollbar-button,
+#projects-cont::-webkit-scrollbar-button {
+    display: none;
 }
 
 a{
     text-decoration: underline;
     color: #cfeaee;
 }
+a:hover{
+    color: #001127;
+    text-decoration: none;
+    background-color: #cfeaee;
+}
 i{
     color: white;
 }
 h1, h3, h2, h4{
     margin: 0px 0px 0px 0px;
-    font-family: 'Ruda', serif;
+    font-family: 'Iosevka Web', serif;
 }
 p{
     margin: 0px 0px 0px 0px;
